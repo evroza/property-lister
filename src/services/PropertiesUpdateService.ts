@@ -28,7 +28,10 @@ export  default class PropertiesUpdateService {
             }
 
             await this.jobUpdate(jobId, { status: ProcessingJobStatus.UpdatingDb});
-            await this.createUpdateProperties(JSON.parse(listings));
+            //@ts-ignore
+            console.log(`SUCCESS: Fetched ${listings.outlets.availability.results.length} properties from API!`);
+            //@ts-ignore
+            await this.createUpdateProperties(listings);
             await this.jobUpdate(jobId, { status: ProcessingJobStatus.Success});
         } catch (error) {
             await this.jobUpdate(jobId, {
@@ -92,7 +95,6 @@ export  default class PropertiesUpdateService {
             let hash = crypto.createHash('md5').update(listingStr).digest("hex");
             try {
                 const dbListing = await Listing.findOne({
-                    attributes: ['propertyId', 'hash'],
                     where: {
                         propertyId
                     }
@@ -109,6 +111,7 @@ export  default class PropertiesUpdateService {
                             await t.rollback();
                             throw new Error('Error creating listing: ' + propertyId);
                         };
+                        
                         let expression = await ListingExpression.create({
                             listingId: newListing.id,
                             meta: listingStr,
@@ -119,11 +122,13 @@ export  default class PropertiesUpdateService {
                             await t.rollback();
                             throw new Error('Error creating Expression for Listing: ' + propertyId);
                         };
+                        await newListing.set({ activeExpression: expression.id });
+                        await newListing.save();
                     });
-                    return;
+                    continue;
                 }
 
-                if(dbListing && dbListing.hash === hash) return; // Listing up to date
+                if(dbListing && dbListing.hash === hash) continue; // Listing up to date
 
                 // Create new expression for Current listing and update hash
                 await sequelize.transaction(async (t) => {
@@ -142,7 +147,8 @@ export  default class PropertiesUpdateService {
                     });
                     dbListing.save();
                 });
-            } catch (error) {
+            } catch (error) { console.log(error);
+            
                 console.log(`Error updating Listing or Expression for propertyId: ${propertyId}  PAYLOAD: ${listingStr}`);
             }
             

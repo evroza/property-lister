@@ -1,7 +1,7 @@
 import { Router, Response, NextFunction, Request } from 'express';
 import Controller from '@interfaces/Controller';
 import EntityNotFoundException from '@exceptions/EntityNotFoundException';
-// import ListingsController from './ListingsController';
+import ListingsController from './ListingsController';
 import PropertiesUpdateService from '@services/PropertiesUpdateService';
 import { Op } from 'sequelize';
 import ServerException from '@exceptions/ServerErrorException';
@@ -29,7 +29,7 @@ class UpdateController implements Controller {
    * @param response express response
    * @param next 
    */
-  private async refreshProperties (request: Request, response: Response, next: NextFunction) {
+  public async refreshProperties (request: Request, response: Response, next: NextFunction) {
     const {Job} = request.app.get('models');
     let job = await Job.findOne({where: {
         [Op.and]: {
@@ -44,13 +44,14 @@ class UpdateController implements Controller {
     })
     if(!job)  return next(new ServerException("Unexpected error! Unable to Create Update Job"));
     new PropertiesUpdateService().update(job.id); //Trigger Properties Update - don't wait
+    response.status(202);
     return response.json(job)
   }
 
   /**
    * fetchUpdate checks the status of a update check job
    * If done then fetch all listings, otherwise return it's status
-   * @param request express request 
+   * @param request express request
    * @param response express response
    * @param next 
    */
@@ -58,14 +59,16 @@ class UpdateController implements Controller {
     const {Job} = request.app.get('models');
     const {jobId} = request.params
     let job = await Job.findOne({
-      id: jobId
+      where: {
+        id: jobId
+      }
     })
 
-    if(!job)  return next(new EntityNotFoundException("Job", job.id));
+    if(!job)  return next(new EntityNotFoundException("Job", jobId));
     if (job.status !== 2) return response.json(job);
 
     // Fetch Properties Listings if Job completed
-    // return await new ListingsController().getAllActiveListings(request, response, next);
+    return await new ListingsController().getAllActiveListings(request, response, next);
   }
 }
 

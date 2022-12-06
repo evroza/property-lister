@@ -6,6 +6,7 @@ import { sequelize } from '@models/model';
 import ActionForbiddenException from '@exceptions/ActionForbiddenException';
 import ServerException from '@exceptions/ServerErrorException';
 import ListingExpression from '@models/ListingExpression';
+import UpdateController from './UpdateController';
 
 
 class ListingsController implements Controller {
@@ -172,7 +173,10 @@ class ListingsController implements Controller {
         as: "ActiveExpression"
     }]
     })
-    if(listings.length == 0) return next(new EntityNotFoundException("Listing"));
+    if(listings.length == 0) { // Fetch from API
+      response.status(202);
+      return await new UpdateController().refreshProperties(request, response, next);
+    }
     return response.json(listings)
   }
 }
