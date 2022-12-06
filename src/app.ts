@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import { sequelize } from '@models/index';
 import Controller from '@interfaces/Controller';
@@ -34,6 +35,7 @@ class App {
     private initializeMiddlewares() {
       this.app.use(bodyParser.urlencoded({ extended: true }));
       this.app.use(bodyParser.json());
+      this.app.use(cors());
     }
 
     private initializeErrorHandling() {
