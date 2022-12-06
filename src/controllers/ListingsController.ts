@@ -5,6 +5,7 @@ import EntityNotFoundException from '@exceptions/EntityNotFoundException';
 import { sequelize } from '@models/model';
 import ActionForbiddenException from '@exceptions/ActionForbiddenException';
 import ServerException from '@exceptions/ServerErrorException';
+import ListingExpression from '@models/ListingExpression';
 
 
 class ListingsController implements Controller {
@@ -149,6 +150,7 @@ class ListingsController implements Controller {
 
   /**
    * getAllActiveListings returns all active Listings - excludes (soft)deleted listings
+   * includes the default expression for each listing
    * @param request express request
    * @param response express response
    * @param next 
@@ -156,13 +158,20 @@ class ListingsController implements Controller {
    */
   public async getAllActiveListings (request: Request, response: Response, next: NextFunction) {
     const {Listing} = request.app.get('models');
-    const listings = await Listing.findAll({where: {
+    const listings = await Listing.findAll({
+      where: {
         [Op.and]: {
             isDeleted: {
                 [Op.not]: '1'
             }
         }
-    }})
+      },
+      include: [{
+        model: ListingExpression,
+        required: true,
+        as: "ActiveExpression"
+    }]
+    })
     if(listings.length == 0) return next(new EntityNotFoundException("Listing"));
     return response.json(listings)
   }
