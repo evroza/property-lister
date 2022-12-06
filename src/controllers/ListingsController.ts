@@ -154,8 +154,8 @@ class ListingsController implements Controller {
    * @param next 
    * @returns 
    */
-  private async getAllActiveListings (request: Request, response: Response, next: NextFunction) {
-    const {Listing} = request.app.get('models')
+  public async getAllActiveListings (request: Request, response: Response, next: NextFunction) {
+    const {Listing} = request.app.get('models');
     const listings = await Listing.findAll({where: {
         [Op.and]: {
             isDeleted: {

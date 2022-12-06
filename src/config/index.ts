@@ -9,6 +9,11 @@ const config = convict({
     default: 3001,
     env: 'APP_PORT',
   },
+  listingsEndpoint: {
+    doc: '3rd party endpoint to fetch listings from',
+    default: 'localhost',
+    env: 'PROPERTIES_ENDPOINT',
+  },  
   db : {
     dialect: {
       doc: 'SQL Dialect of the primary database',

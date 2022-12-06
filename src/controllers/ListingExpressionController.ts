@@ -69,7 +69,7 @@ class ListingExpressionController implements Controller {
    * @param response express response
    * @param next 
    */
-     private async deleteListingExpressionById (request: Request, response: Response, next: NextFunction) {
+  private async deleteListingExpressionById (request: Request, response: Response, next: NextFunction) {
       const {ListingExpression} = request.app.get('models');
       const {listingId, expressionId} = request.params;
       const expression = await ListingExpression.findOne({

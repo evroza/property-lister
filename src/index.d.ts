@@ -1,1 +1,3 @@
-type entity = "Listing" | "Expression";
+type entity = "Listing" | "Expression" | "Job";
+
+type propertyListings = { outlets: { availability: { results } } };

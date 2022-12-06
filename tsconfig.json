@@ -36,7 +36,8 @@
       "@controllers/*": ["controllers/*"],
       "@middlewares/*": ["middlewares/*"],
       "@interfaces/*": ["interfaces/*"],
-      "@exceptions/*": ["exceptions/*"]
+      "@exceptions/*": ["exceptions/*"],
+      "@services/*": ["services/*"]
     }
   },
   "include": ["src/*.ts", "src/**/*.ts", "test/*.ts", "test/**/*.ts"],
