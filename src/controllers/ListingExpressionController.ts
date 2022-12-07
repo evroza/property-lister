@@ -88,6 +88,7 @@ class ListingExpressionController implements Controller {
       });
       if(!expression)  return next(new EntityNotFoundException("Expression", listingId));
       if(expression.Listing.isDeleted == 1)  return next(new ActionForbiddenException("Expression's Parent Listing is Already Deleted!"));
+      if(expression.Listing.activeExpression == expressionId)  return next(new ActionForbiddenException("Cannot delete default expression of Listing if other expressions exist. Switch expression first!"));
       if(expression.isDeleted) return next(new ActionForbiddenException("Expression Already Deleted!"));
 
       const deleteExpressionResponse = {
@@ -230,7 +231,7 @@ class ListingExpressionController implements Controller {
         try {
           let newExpression = await ListingExpression.create({
             listingId,
-            meta,
+            meta: meta.meta,
             isDeleted: 0,
             isEdit: 1,
             parentExpression: expressionId

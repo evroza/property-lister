@@ -40,7 +40,7 @@ class App {
       this.app.use(bodyParser.json());
       this.app.use(cors());
       this.app.use(express.static(path));
-      this.app.use(morgan('combined'))
+      this.app.use(morgan('combined'));
     }
 
     private initializeErrorHandling() {

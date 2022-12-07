@@ -11,7 +11,7 @@ const config = convict({
   },
   listingsEndpoint: {
     doc: '3rd party endpoint to fetch listings from',
-    default: 'localhost',
+    default: 'http://localhost',
     env: 'PROPERTIES_ENDPOINT',
   },  
   db : {
