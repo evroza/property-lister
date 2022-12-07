@@ -152,6 +152,7 @@ class ListingsController implements Controller {
   /**
    * getAllActiveListings returns all active Listings - excludes (soft)deleted listings
    * includes the default expression for each listing
+   * Excludes Listings with Default expression lacking country or score
    * @param request express request
    * @param response express response
    * @param next 
@@ -164,13 +165,14 @@ class ListingsController implements Controller {
         [Op.and]: {
             isDeleted: {
                 [Op.not]: '1'
-            }
+            },
+            [Op.not]: sequelize.literal(`meta -> 'property' -> 'location' ->> 'country' != '' AND meta -> 'property' -> 'reviews' ->> 'summary' is not null`)
         }
       },
       include: [{
         model: ListingExpression,
         required: true,
-        as: "ActiveExpression"
+        as: "ActiveExpression",
     }]
     })
     if(listings.length == 0) { // Fetch from API

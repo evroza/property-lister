@@ -25,10 +25,10 @@ export default class ListingExpression extends Model {
     public listingId: number;
 
     @Attribute({
-        type: DataTypes.JSON,
+        type: DataTypes.JSONB,
         allowNull: false
     })
-    public meta: string;
+    public meta: any;
 
     @Attribute({
         type: DataTypes.INTEGER

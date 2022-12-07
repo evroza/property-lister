@@ -114,7 +114,7 @@ export  default class PropertiesUpdateService {
                         
                         let expression = await ListingExpression.create({
                             listingId: newListing.id,
-                            meta: listingStr,
+                            meta: listing,
                             isDeleted: 0,
                             isEdit: 0
                         });
@@ -134,7 +134,7 @@ export  default class PropertiesUpdateService {
                 await sequelize.transaction(async (t) => {
                     let expression = await ListingExpression.create({
                         listingId: dbListing.id,
-                        meta: listingStr,
+                        meta: listing,
                         isDeleted: 0,
                         isEdit: 0
                     });
