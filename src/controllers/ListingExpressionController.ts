@@ -20,7 +20,8 @@ class ListingExpressionController implements Controller {
     this.router.get(`${this.path}`, this.getAllListingExpressions);
     this.router.get(`${this.path}/:expressionId`, this.getListingExpressionById);
     this.router.delete(`${this.path}/:expressionId`, this.deleteListingExpressionById);
-    this.router.put(`${this.path}/:expressionId`, this.restoreListingExpressionById);
+    this.router.put(`${this.path}/:expressionId`, this.restoreListingExpressionById); //restore expression
+    this.router.post(`${this.path}/:expressionId`, this.editListingExpressionById); //edit listing (Will create new expression)
   }
 
   /**
@@ -130,7 +131,7 @@ class ListingExpressionController implements Controller {
       
     }
 
-    /**
+   /**
    * restoreListingExpressionById restores expression of the specified ID -sets isDeleted=0
    * NB!! If Listing had been deleted, restore it and set restored expression to default for that Listing
    * If expression has not been deleted cannot be restored, return error
@@ -188,6 +189,61 @@ class ListingExpressionController implements Controller {
       }
       
     }
+
+  /**
+   * editListingExpressionById creates new expression based on a previous expression whose ID had been provided
+   * NB!! Cannot edit deleted expression
+   * If expression has not been deleted cannot be restored, return error
+   * @param request express request 
+   * @param response express response
+   * @param next 
+   */
+      private async editListingExpressionById (request: Request, response: Response, next: NextFunction) {
+        const {ListingExpression} = request.app.get('models');
+        const {listingId, expressionId} = request.params;
+        const meta = request.body;
+        console.log(meta);
+        
+        const expression = await ListingExpression.findOne({
+          where: {
+              [Op.and]: {
+                  listingId,
+                  id: expressionId
+              } 
+          },
+          include: [{
+            model: Listing,
+            required: true,
+            as: "Listing"
+        }]
+        });
+        if(!expression)  return next(new EntityNotFoundException("Expression", expressionId));
+        if(expression.isDeleted == 1 || expression.Listing.isDeleted == 1) return next(new ActionForbiddenException("Expression or Parent Listing is Deleted, cannot edit!"));
+
+
+
+        const createNewExpressionResponse = {
+          success: false,
+          expressionId: null
+        }
+        
+        try {
+          let newExpression = await ListingExpression.create({
+            listingId,
+            meta,
+            isDeleted: 0,
+            isEdit: 1,
+            parentExpression: expressionId
+          });
+          createNewExpressionResponse.success = true;
+          createNewExpressionResponse.expressionId = newExpression.id;
+          
+          if(!response.headersSent) return response.json(createNewExpressionResponse)
+        } catch (error) {
+          return next(new ServerException(error));
+        }
+        
+      }
 
 }
 
