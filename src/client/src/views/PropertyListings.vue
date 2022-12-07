@@ -156,7 +156,12 @@ export default {
         this.errorMessage = null;
         this.loading = ref(true);
 
-        const response = await axios.get('http://localhost:3001/listings');
+        let response = await axios.get('http://localhost:3001/listings');
+        if (!Array.isArray(response.data)) {
+          await new Promise((res) => setTimeout(res, 3500));
+          response = await axios.get('http://localhost:3001/listings');
+        }
+
         this.hotels = response.data;
 
         this.loading = ref(false);
