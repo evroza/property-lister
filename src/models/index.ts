@@ -1,11 +1,13 @@
 import { sequelize } from "./model";
 import Listing from '@models/Listing';
 import ListingExpression from '@models/ListingExpression';
+import Job from '@models/Job';
 
 
-const models = {
+export const models = {
     Listing,
-    ListingExpression
+    ListingExpression,
+    Job
 };
 Object.keys(models).forEach(modelName => {
     if (models[modelName].associate) {
@@ -16,5 +18,6 @@ Object.keys(models).forEach(modelName => {
 export {
     sequelize,
     Listing,
-    ListingExpression
+    ListingExpression,
+    Job
 }

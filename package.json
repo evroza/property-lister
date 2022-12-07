@@ -18,8 +18,8 @@
     "sequelize-decorators": "^1.0.2"
   },
   "scripts": {
-    "start": "npm run build && nodemon dist/server.js",
-    "seed": "npm run build && node dist/seed/seedDb.js",
+    "start": "yarn run build && nodemon dist/server.js",
+    "setup-db": "yarn run build && node dist/db/setupDb.js",
     "build": "tsc",
     "build-frontend": "rm -fR -- dist/frontend && mkdir -p dist && cd src/client/ && yarn build && mv build ../../dist/frontend",
     "start:dev": "nodemon --verbose",

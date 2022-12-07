@@ -34,7 +34,7 @@ class UpdateController implements Controller {
     let job = await Job.findOne({where: {
         [Op.and]: {
             status: { [Op.notIn]: [-1,2] },
-            createdAt: { [Op.lte]: 5 } // Find right expression for created at less than 5 minutes ago
+            // createdAt: { [Op.lte]: new Date(new Date().getTime()-300000) } // Find right expression for created at less than 5 minutes ago
         }
     }})
     if(job) return job;
