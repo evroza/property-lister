@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import * as bodyParser from 'body-parser';
-import { sequelize } from '@models/index';
+import { sequelize } from './models/index';
 import Controller from '@interfaces/Controller';
-import config from './config';
+import config from '@config/index';
 import errorMiddleware from '@middlewares/ErrorHandlingMiddleware';
 
 const path = __dirname + '/frontend/';

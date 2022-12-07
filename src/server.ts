@@ -6,7 +6,7 @@ import UpdateController from '@controllers/UpdateController';
 
 
 // Start the server
-const app = new App(
+export const server = new App(
   [
     new ListingsController(),
     new ListingExpressionController(),
@@ -18,7 +18,7 @@ init();
 
 async function init() {
   try {
-    app.listen();
+    server.listen();
   } catch (error) {
     console.error(`An error occurred: ${JSON.stringify(error)}`);
     process.exit(1);

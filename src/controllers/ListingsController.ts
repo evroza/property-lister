@@ -6,7 +6,7 @@ import { sequelize } from '@models/model';
 import ActionForbiddenException from '@exceptions/ActionForbiddenException';
 import ServerException from '@exceptions/ServerErrorException';
 import ListingExpression from '@models/ListingExpression';
-import UpdateController from './UpdateController';
+import UpdateController from '@controllers/UpdateController';
 
 
 class ListingsController implements Controller {

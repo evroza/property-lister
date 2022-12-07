@@ -1,5 +1,5 @@
 import { Dialect, Sequelize } from 'sequelize';
-import config from '@config/index';
+import config from '../config';
 
 const db = config.get('db');
 const { dialect, host, port, name, password, username } = db;
