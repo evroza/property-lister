@@ -110,9 +110,11 @@ Below is a list of the available API's for the application.
 
 
 ### Tests -- To be implemented
-Unfortunately are yet to be implemented for the various features, there was trouble setting up Jest with typescript due to known issues associated with using jest on projects where `module-alias` and potentially `sequalize` has been used.
+Unfortunately are yet to be implemented for the various features, there was trouble setting up Jest with typescript due to [known issues](https://github.com/kulshekhar/ts-jest/issues/937) associated with using jest on projects where `module-alias` and potentially `sequalize` has been used.
 
-Couldn't finish setting up the jest compilation for now. 
+Couldn't finish setting up the jest compilation for now.   
+
+------
 
 
 
