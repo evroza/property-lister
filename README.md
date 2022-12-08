@@ -22,11 +22,6 @@ Codebase could benefit from refactors and improvements such as:
 - Tests and Coverage (SEE BELOW FOR A NOTE ON TESTS)
 - Migrations
 
-## Technical Notes
-> ***Where date is required while posting to api, the format will be `yyyy-mm-dd`***
-- The server is running on port 3001 by default. You can change this in the `.env` file
-- To authenticate users use the `getProfile` middleware that is located under src/middleware/getProfile.js. users are authenticated by passing `profile_id` in the request header. after a user is authenticated his profile will be available under `req.profile`. make sure only users that are on the contract can access their contracts.
-- 
 ### App Components
 
 Laid out in respective directory by function. Important ones are
