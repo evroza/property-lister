@@ -84,11 +84,86 @@ Jobs have 4 states:
 ## APIs Implemented
 
 Below is a list of the available API's for the application.
+### Legend:
+[X] - Implemented in backend and currently being consumed by frontend  
+[ ] - Implemented in backend but currently not being consumed  
 
 
-1. ***GET*** `/listings` - Returns all non-deleted listings with at least one expression
+1. ***GET*** `/listings` - Returns all non-deleted listings with at least one expression [X]
 
-2. ***GET*** `/listings/:id` - Returns a Single Listing with all it's non-deleted expressions  
+2. ***GET*** `/listings/:id` - Returns a Single Listing with all it's non-deleted expressions   [X]
 
-3. ***DELETE*** `/listings/:id` - Returns a Single Listing with all it's non-deleted expressions  
+3. ***DELETE*** `/listings/:id` - Soft deletes a property listing  [X]
+
+3. ***PUT*** `/listings/:id` - Restore a listing only if it had been deleted  [ ]
+
+4. ***GET*** `/listings/:id/expressions` - Returns all expressions for a property Listing whether deleted or live.   [ ]
+
+5. ***GET*** `/listings/:id/expressions/:expressionId` - Returns a Single expression if it's not marked as deleted and belongs to the listing with  id == `:id`  [X]
+
+6. ***DELETE*** `/listings/:id/expressions/:expressionId` - Soft delete an expression  [X]
+
+7. ***PUT*** `/listings/:id/expressions/:expressionId` - Restore  a deleted expression  [ ]
+
+8. ***POST*** `/listings/:id/expressions/:expressionId` - Create a new expression for the Listing with id == `:id`. The post body should contain the new expression's metadata (This is called when we edit and save an expression on the frontend)  [X]
+
+
+
+### Tests -- To be implemented
+Unfortunately are yet to be implemented for the various features, there was trouble setting up Jest with typescript due to known issues associated with using jest on projects where `module-alias` and potentially `sequalize` has been used.
+
+Couldn't finish setting up the jest compilation for now. 
+
+
+
+
+# Example requests
+
+```
+
+### By Design, we Don't provide endpoint to directly access expression without knowing it's listing ID to make bruteforcing less direct
+
+### Get all Listings
+## If we get status 202 it means the app is fetching Listings from 3rd party API and has instead returned Job ID
+GET http://localhost:3001/listings
+
+### GET Single listing with all it's expressions - EXCLUDES DELETED EXPRESSIONS
+GET http://localhost:3001/listings/126
+
+### DELETE Single listing - will NOT delete it's expressions - thus if listing restored, previous state of expressions retained
+DELETE  http://localhost:3001/listings/3
+
+### RESTORE a deleted listing by id - just listing, expressions retain previous state before listing deletion. 
+PUT  http://localhost:3001/listings/3
+
+### GET Expressions for a listing -> Return ALL expressions for listing INCLUDING deleted expressions - This could allow us to view and
+### recover listings with all expressions deleted since we can view ALL expressions for a listing and potentially modify their status
+GET http://localhost:3001/listings/3/expressions
+
+### Get expression with specified ID which falls under listing with specified ID
+### 404 not found
+### 403 found but forbidden (Expression is deleted)
+GET http://localhost:3001/listings/126/expressions/160
+
+### DELETE Expression with specified ID for the listing with specified ID
+## If all expressions for listing have alreadt deleted then listing also deleted
+DELETE http://localhost:3001/listings/126/expressions/157
+
+### RESTORE Expression with specified ID for the listing with specified ID
+## If Listing had been deleted then restore it too and set active expression to the restored one
+PUT http://localhost:3001/listings/126/expressions/157
+
+### Update listings from 3rd parrty API
+GET http://localhost:3001/updates
+
+###
+GET http://localhost:3001/updates/48
+
+###
+### Edit expression (creates new expression) and returns it's ID in response
+POST http://localhost:3001/listings/126/expressions/133
+content-type: application/json
+
+{"property":{"appCode":"","locale":"en-US","propertyCode":"fqeA","name":"Citadines St Georges Terrace Perth","starRating":4,"location":{"address":"No 185 St Georges Terrace","city":"Perth","country":"AU","countryCode":"AU","postalCode":"6000","stateProvince":null,"latLng":{"lat":-31.953843,"lng":115.853637}},"trustYou":{"score":87,"reviewsCount":1245,"key":"pos3"},"checkInTime":null,"checkOutTime":"11:00:00.000000","contacts":{"phone":"61-8-92263355","fax":"","email":"","website":null},"airportCode":"","heroImage":{"caption":"","url":"https://property-gallery.rakutentravelxchange.com/fqeA/QK0XAKe6.jpg"},"gallery":[{"s":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6pPwg8p6.jpg"},"m":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6pPwg8p6.jpg"}},{"s":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6OalKrN4.jpg"},"m":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6OalKrN4.jpg"},"xs":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6OalKrN4.jpg"},"l":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6OalKrN4.jpg"},"xl":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6OalKrN4.jpg"}},{"s":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/QMbE8rn6.jpg"},"m":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/QMbE8rn6.jpg"},"xs":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/QMbE8rn6.jpg"},"l":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/QMbE8rn6.jpg"},"xl":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/QMbE8rn6.jpg"}},{"s":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/72M9RAl6.jpg"},"m":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/72M9RAl6.jpg"}},{"s":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6l1rzJm7.jpg"},"m":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6l1rzJm7.jpg"},"xs":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6l1rzJm7.jpg"},"l":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6l1rzJm7.jpg"},"xl":{"caption":"Room","url":"https://property-gallery.rakutentravelxchange.com/fqeA/6l1rzJm7.jpg"}}],"categoryId":1,"facilities":[183,147,9,141,15,259,42,5,121],"reviews":{"summary":{"globalPopularity":36.508743,"highlightList":[{"categoryIdList":["244","21b","21"],"confidence":100,"text":"Fully equipped gym"},{"categoryIdList":["f63a","11","111","333","11b"],"confidence":100,"text":"Clean sheets"}],"hotelType":{"text":"Very good wellness hotel."},"location":{"text":"Located near shopping areas with easy access to parking."},"locationNearby":null,"popularWith":{"text":"Popular among solo travelers.","tripType":"solo"},"popularity":37,"reviewsDistribution":[{"reviewsCount":22,"stars":1},{"reviewsCount":26,"stars":2},{"reviewsCount":113,"stars":3},{"reviewsCount":464,"stars":4},{"reviewsCount":617,"stars":5}],"score":"85","scoreDescription":"Very Good","summarySentenceList":[],"text":"Very good wellness hotel. Located near shopping areas with easy access to parking."}}},"packages":[{"propertyCode":"fqeA","description":"studio deluxe","supplierDescription":"studio deluxe","foodCode":1,"roomType":"studio deluxe","roomView":"","beds":{},"nonRefundable":false,"token":null,"images":[],"rateType":"pay_at_hotel","pricingVer":"178","initialForex":83.79976293615354,"displayRate":{"value":15084,"currency":"JPY","txFees":0,"txFeesInPct":0,"taxesAndFeesTotal":1508.4,"taxesConfident":0},"adjustedDisplayRate":{"value":15084,"currency":"JPY","txFees":0,"txFeesInPct":0,"taxesAndFeesTotal":1508.4,"taxesConfident":0},"marketRates":[],"unitMarketRates":[],"score":0,"skip":false,"finalAdjustmentAmount":null,"finalAdjustments":[],"totalAmount":null,"rakutenPoint":301,"payAtHotel":true}],"supplierId":null,"payAtHotel":true,"supplierRank":4}
+```
 
